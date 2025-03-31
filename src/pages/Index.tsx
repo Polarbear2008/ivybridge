@@ -9,6 +9,7 @@ import TestimonialsSection from '../components/TestimonialsSection';
 import CTASection from '../components/CTASection';
 import Footer from '../components/Footer';
 import AnimatedBackground from '../components/AnimatedBackground';
+import DeadlineCountdown from '../components/DeadlineCountdown';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -73,6 +74,29 @@ const Index = () => {
           <AnimatedBackground />
           <Navbar />
           <Hero />
+          
+          {/* Application Deadline Countdown Section */}
+          <section className="py-12 md:py-16 bg-gradient-to-b from-ivy-navy to-ivy-navy/90 relative">
+            <div className="container mx-auto px-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true, margin: "-100px" }}
+                className="text-center mb-10"
+              >
+                <h2 className="text-3xl md:text-4xl font-serif font-bold text-white mb-4">
+                  <span className="text-ivy-gold">Application</span> Deadlines
+                </h2>
+                <p className="text-white/80 max-w-2xl mx-auto">
+                  Stay on track with upcoming Ivy League application deadlines. Our consultants can help you prepare a competitive application before time runs out.
+                </p>
+              </motion.div>
+              
+              <DeadlineCountdown />
+            </div>
+          </section>
+          
           <ProgramsSection />
           <StatsSection />
           <TestimonialsSection />

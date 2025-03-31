@@ -13,11 +13,32 @@ const ivyLeagueUniversities = [
   "Cornell University"
 ];
 
+// Application deadlines for Ivy League universities
+const applicationDeadlines = [
+  {
+    university: "Harvard",
+    date: "Nov 1, 2025",
+    type: "Early Action"
+  },
+  {
+    university: "Yale",
+    date: "Nov 1, 2025",
+    type: "Early Action"
+  },
+  {
+    university: "Princeton",
+    date: "Nov 1, 2025",
+    type: "Early Action"
+  }
+];
+
 const Hero = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [imageLoaded, setImageLoaded] = useState(false);
   const [contentReady, setContentReady] = useState(false);
   const [currentUniversityIndex, setCurrentUniversityIndex] = useState(0);
+  const [currentDeadlineIndex, setCurrentDeadlineIndex] = useState(0);
+  const [timeRemaining, setTimeRemaining] = useState({ days: 0, hours: 0 });
   const heroRef = useRef<HTMLDivElement>(null);
   const parallaxRef = useRef<HTMLDivElement>(null);
   const bgImageUrl = '/images/graduation-bg.jpg'; // Updated to use the graduation image
@@ -97,6 +118,44 @@ const Hero = () => {
       clearInterval(intervalId);
     };
   }, []);
+  
+  // Rotate through application deadlines
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentDeadlineIndex((prevIndex) => 
+        prevIndex === applicationDeadlines.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 5000);
+    
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
+  
+  // Calculate time remaining until deadline
+  useEffect(() => {
+    // Set a mock deadline for November 1, 2025
+    const deadline = new Date('2025-11-01T23:59:59');
+    
+    const calculateTimeRemaining = () => {
+      const now = new Date();
+      const difference = deadline.getTime() - now.getTime();
+      
+      // Calculate days and hours
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      
+      setTimeRemaining({ days, hours });
+    };
+    
+    // Calculate initially
+    calculateTimeRemaining();
+    
+    // Update every hour
+    const intervalId = setInterval(calculateTimeRemaining, 1000 * 60 * 60);
+    
+    return () => clearInterval(intervalId);
+  }, []);
 
   // Text animation variants
   const textContainer = {
@@ -129,6 +188,41 @@ const Hero = () => {
     exit: { 
       opacity: 0,
       transition: { duration: 0.8, ease: "easeInOut" }
+    }
+  };
+  
+  // Deadline card animation variants
+  const deadlineCardVariants = {
+    hidden: { opacity: 0, x: 50 },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+        delay: 0.8
+      }
+    }
+  };
+  
+  const deadlineItemVariants = {
+    hidden: { opacity: 0, x: 20 },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      }
+    },
+    exit: { 
+      opacity: 0, 
+      x: -20,
+      transition: {
+        duration: 0.2
+      }
     }
   };
 
@@ -204,90 +298,185 @@ const Hero = () => {
       {/* Content - only show when ready */}
       <AnimatePresence>
         {contentReady && (
-          <motion.div 
-            className="relative z-10 container mx-auto px-4 flex flex-col justify-center items-start max-w-6xl"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
-          >
-            <motion.div
-              variants={textContainer}
-              initial="hidden"
-              animate="visible"
-              className="max-w-3xl"
+          <div className="relative z-10 container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+            {/* Left side - Main content */}
+            <motion.div 
+              className="w-full md:w-3/5 flex flex-col justify-center items-start max-w-3xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
             >
-              <motion.span variants={textItem} className="inline-block text-ivy-gold font-semibold tracking-wide mb-2">ELITE COLLEGE ADMISSIONS</motion.span>
-              <motion.h1 variants={textItem} className="text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white leading-tight">
-                Your <span className="text-ivy-gold relative">
-                  Ivy League
-                  <motion.div 
-                    className="absolute left-0 -bottom-1 w-full h-0.5 bg-ivy-gold/50"
-                    initial={{ width: 0 }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: 0.8, delay: 0.5 }}
-                  />
-                </span> Journey Starts Here
-              </motion.h1>
-              <motion.div variants={textItem} className="w-24 h-1 bg-ivy-gold my-6"></motion.div>
-              <motion.p variants={textItem} className="text-xl md:text-2xl text-white/90 font-light mb-8 max-w-xl">
-                Premium admission consulting for ambitious students seeking entry into the nation's most prestigious universities.
-              </motion.p>
-              
-              <motion.div 
-                variants={textItem}
-                className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4"
-              >
-                <motion.button 
-                  className="btn-primary relative overflow-hidden group"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <span className="relative z-10">Explore Programs</span>
-                  <span className="absolute inset-0 w-full h-full bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                </motion.button>
-                <motion.button 
-                  className="btn-secondary group"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <span className="group-hover:text-white transition-colors duration-300">Book a Consultation</span>
-                </motion.button>
-              </motion.div>
-              
-              {/* Ivy League universities logos */}
               <motion.div
-                variants={textItem}
-                className="mt-12 flex flex-wrap items-center gap-4"
+                variants={textContainer}
+                initial="hidden"
+                animate="visible"
               >
-                <span className="text-white/60 text-sm">Helping students reach:</span>
-                {ivyLeagueUniversities.map((university, index) => (
-                  <motion.div
-                    key={university}
-                    className={`px-3 py-1 rounded-full border ${index === currentUniversityIndex ? 'border-ivy-gold text-ivy-gold' : 'border-white/20 text-white/40'} text-xs`}
-                    animate={index === currentUniversityIndex ? { scale: 1.1, opacity: 1 } : { scale: 1, opacity: 0.7 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                  >
-                    {university.split(' ')[0]}
-                  </motion.div>
-                ))}
-              </motion.div>
-              
-              <motion.div 
-                variants={textItem}
-                className="mt-16 flex items-center space-x-4"
-              >
-                <motion.span 
-                  className="text-ivy-gold font-semibold"
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                <motion.span variants={textItem} className="inline-block text-ivy-gold font-semibold tracking-wide mb-2">ELITE COLLEGE ADMISSIONS</motion.span>
+                <motion.h1 variants={textItem} className="text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white leading-tight">
+                  Your <span className="text-ivy-gold relative">
+                    Ivy League
+                    <motion.div 
+                      className="absolute left-0 -bottom-1 w-full h-0.5 bg-ivy-gold/50"
+                      initial={{ width: 0 }}
+                      animate={{ width: "100%" }}
+                      transition={{ duration: 0.8, delay: 0.5 }}
+                    />
+                  </span> Journey Starts Here
+                </motion.h1>
+                <motion.div variants={textItem} className="w-24 h-1 bg-ivy-gold my-6"></motion.div>
+                <motion.p variants={textItem} className="text-xl md:text-2xl text-white/90 font-light mb-8 max-w-xl">
+                  Premium admission consulting for ambitious students seeking entry into the nation's most prestigious universities.
+                </motion.p>
+                
+                <motion.div 
+                  variants={textItem}
+                  className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4"
                 >
-                  Season 4 Coming Soon
-                </motion.span>
-                <div className="w-px h-6 bg-ivy-gold/30"></div>
-                <div className="text-white/80 text-sm">Applications opening Fall 2023</div>
+                  <motion.button 
+                    className="btn-primary relative overflow-hidden group"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <span className="relative z-10">Explore Programs</span>
+                    <span className="absolute inset-0 w-full h-full bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
+                  </motion.button>
+                  <motion.button 
+                    className="btn-secondary group"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <span className="group-hover:text-white transition-colors duration-300">Book a Consultation</span>
+                  </motion.button>
+                </motion.div>
+                
+                {/* Ivy League universities logos */}
+                <motion.div
+                  variants={textItem}
+                  className="mt-12 flex flex-wrap items-center gap-4"
+                >
+                  <span className="text-white/60 text-sm">Helping students reach:</span>
+                  {ivyLeagueUniversities.map((university, index) => (
+                    <motion.div
+                      key={university}
+                      className={`px-3 py-1 rounded-full border ${index === currentUniversityIndex ? 'border-ivy-gold text-ivy-gold' : 'border-white/20 text-white/40'} text-xs`}
+                      animate={index === currentUniversityIndex ? { scale: 1.1, opacity: 1 } : { scale: 1, opacity: 0.7 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 15 }}
+                    >
+                      {university.split(' ')[0]}
+                    </motion.div>
+                  ))}
+                </motion.div>
+                
+                <motion.div 
+                  variants={textItem}
+                  className="mt-16 flex items-center space-x-4"
+                >
+                  <motion.span 
+                    className="text-ivy-gold font-semibold"
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                  >
+                    Season 4 Coming Soon
+                  </motion.span>
+                  <div className="w-px h-6 bg-ivy-gold/30"></div>
+                  <div className="text-white/80 text-sm">Applications opening Fall 2023</div>
+                </motion.div>
               </motion.div>
             </motion.div>
-          </motion.div>
+            
+            {/* Right side - Application Deadline Card */}
+            <motion.div
+              className="hidden md:block w-2/5 max-w-md"
+              variants={deadlineCardVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden shadow-2xl border border-ivy-gold/20">
+                {/* Card Header */}
+                <div className="bg-ivy-gold/20 p-4 border-b border-ivy-gold/30">
+                  <h3 className="text-ivy-gold text-xl font-serif font-bold flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                    </svg>
+                    Application Deadlines
+                  </h3>
+                </div>
+                
+                {/* Countdown Timer */}
+                <div className="p-5 border-b border-white/10">
+                  <div className="text-white/70 text-sm mb-2">Time Remaining Until Early Applications:</div>
+                  <div className="flex justify-between">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-ivy-gold">{timeRemaining.days}</div>
+                      <div className="text-white/60 text-xs">Days</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-ivy-gold">{timeRemaining.hours}</div>
+                      <div className="text-white/60 text-xs">Hours</div>
+                    </div>
+                    <motion.div 
+                      className="h-16 w-16 rounded-full border-2 border-ivy-gold/30 flex items-center justify-center"
+                      animate={{ 
+                        borderColor: ['rgba(191, 157, 94, 0.3)', 'rgba(191, 157, 94, 0.6)', 'rgba(191, 157, 94, 0.3)']
+                      }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <motion.div 
+                        className="h-12 w-12 rounded-full border-2 border-ivy-gold/50 flex items-center justify-center"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                      >
+                        <div className="text-ivy-gold text-xs font-bold">URGENT</div>
+                      </motion.div>
+                    </motion.div>
+                  </div>
+                </div>
+                
+                {/* Upcoming Deadlines */}
+                <div className="p-5">
+                  <div className="text-white/70 text-sm mb-3">Upcoming Deadlines:</div>
+                  <div className="space-y-4">
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={currentDeadlineIndex}
+                        variants={deadlineItemVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        className="flex justify-between items-center bg-white/5 p-3 rounded-lg border-l-2 border-ivy-gold"
+                      >
+                        <div>
+                          <div className="text-ivy-gold font-medium">{applicationDeadlines[currentDeadlineIndex].university}</div>
+                          <div className="text-white/60 text-xs">{applicationDeadlines[currentDeadlineIndex].type}</div>
+                        </div>
+                        <div className="text-white font-bold">{applicationDeadlines[currentDeadlineIndex].date}</div>
+                      </motion.div>
+                    </AnimatePresence>
+                    
+                    <div className="flex justify-between items-center bg-white/5 p-3 rounded-lg">
+                      <div>
+                        <div className="text-white/80 font-medium">Regular Decision</div>
+                        <div className="text-white/60 text-xs">All Ivy League Schools</div>
+                      </div>
+                      <div className="text-white font-bold">Jan 1, 2026</div>
+                    </div>
+                  </div>
+                  
+                  {/* Call to Action */}
+                  <motion.button
+                    className="w-full mt-5 py-3 bg-ivy-gold text-ivy-navy font-bold rounded-lg flex justify-center items-center space-x-2 hover:bg-ivy-gold/90 transition-colors"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <span>Get Application Help</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
       
