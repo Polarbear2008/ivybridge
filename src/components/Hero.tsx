@@ -20,7 +20,7 @@ const Hero = () => {
   const [currentUniversityIndex, setCurrentUniversityIndex] = useState(0);
   const heroRef = useRef<HTMLDivElement>(null);
   const parallaxRef = useRef<HTMLDivElement>(null);
-  const bgImageUrl = 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1800&q=80';
+  const bgImageUrl = '/images/graduation-bg.jpg'; // Updated to use the graduation image
   
   // Handle mouse movement for parallax effect
   useEffect(() => {
