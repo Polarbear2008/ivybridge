@@ -1,18 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// List of Ivy League universities
-const ivyLeagueUniversities = [
-  "Harvard University",
-  "Yale University",
-  "Princeton University",
-  "Columbia University",
-  "Brown University",
-  "Dartmouth College",
-  "University of Pennsylvania",
-  "Cornell University"
-];
-
 // Application deadlines for Ivy League universities
 const applicationDeadlines = [
   {
@@ -36,7 +24,6 @@ const Hero = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [imageLoaded, setImageLoaded] = useState(false);
   const [contentReady, setContentReady] = useState(false);
-  const [currentUniversityIndex, setCurrentUniversityIndex] = useState(0);
   const [currentDeadlineIndex, setCurrentDeadlineIndex] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState({ days: 0, hours: 0 });
   const heroRef = useRef<HTMLDivElement>(null);
@@ -105,19 +92,6 @@ const Hero = () => {
     
     return () => clearTimeout(timeout);
   }, [bgImageUrl, imageLoaded]);
-  
-  // Rotate through Ivy League universities
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentUniversityIndex((prevIndex) => 
-        prevIndex === ivyLeagueUniversities.length - 1 ? 0 : prevIndex + 1
-      );
-    }, 3000);
-    
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
   
   // Rotate through application deadlines
   useEffect(() => {
@@ -349,24 +323,6 @@ const Hero = () => {
                   </motion.button>
                 </motion.div>
                 
-                {/* Ivy League universities logos */}
-                <motion.div
-                  variants={textItem}
-                  className="mt-12 flex flex-wrap items-center gap-4"
-                >
-                  <span className="text-white/60 text-sm">Helping students reach:</span>
-                  {ivyLeagueUniversities.map((university, index) => (
-                    <motion.div
-                      key={university}
-                      className={`px-3 py-1 rounded-full border ${index === currentUniversityIndex ? 'border-ivy-gold text-ivy-gold' : 'border-white/20 text-white/40'} text-xs`}
-                      animate={index === currentUniversityIndex ? { scale: 1.1, opacity: 1 } : { scale: 1, opacity: 0.7 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                    >
-                      {university.split(' ')[0]}
-                    </motion.div>
-                  ))}
-                </motion.div>
-                
                 <motion.div 
                   variants={textItem}
                   className="mt-16 flex items-center space-x-4"
@@ -400,36 +356,6 @@ const Hero = () => {
                     </svg>
                     Application Deadlines
                   </h3>
-                </div>
-                
-                {/* Countdown Timer */}
-                <div className="p-5 border-b border-white/10">
-                  <div className="text-white/70 text-sm mb-2">Time Remaining Until Early Applications:</div>
-                  <div className="flex justify-between">
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-ivy-gold">{timeRemaining.days}</div>
-                      <div className="text-white/60 text-xs">Days</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-ivy-gold">{timeRemaining.hours}</div>
-                      <div className="text-white/60 text-xs">Hours</div>
-                    </div>
-                    <motion.div 
-                      className="h-16 w-16 rounded-full border-2 border-ivy-gold/30 flex items-center justify-center"
-                      animate={{ 
-                        borderColor: ['rgba(191, 157, 94, 0.3)', 'rgba(191, 157, 94, 0.6)', 'rgba(191, 157, 94, 0.3)']
-                      }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      <motion.div 
-                        className="h-12 w-12 rounded-full border-2 border-ivy-gold/50 flex items-center justify-center"
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                      >
-                        <div className="text-ivy-gold text-xs font-bold">URGENT</div>
-                      </motion.div>
-                    </motion.div>
-                  </div>
                 </div>
                 
                 {/* Upcoming Deadlines */}
